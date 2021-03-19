@@ -1,5 +1,5 @@
 <template>
-<p>阿巴阿巴</p>
+  <el-empty description="根据导航栏选择功能哦～"></el-empty>
 </template>
 
 <script>
