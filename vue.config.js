@@ -9,8 +9,8 @@ module.exports = {
     indexPath: 'index.html',
     devServer: {
         host: '0.0.0.0',
-        port: 8081,
+        port: 8080,
         https: false,
-        proxy: 'http://172.18.3.183:8080'
+        proxy: 'http://172.18.3.183:8081'
     }
 }

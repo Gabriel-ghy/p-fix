@@ -1,16 +1,16 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import {createApp} from 'vue';
+import { createStore } from 'vuex'
+import App from "@/App";
 
-Vue.use(Vuex);
+const app = createApp(App)
 
-export default new Vuex.Store({
+const store = createStore({
     state: {
         token: localStorage.getItem('token') ? localStorage.getItem('token') : ''
-        //从本地获取token，没有则置空
     },
     mutations: {
-        setToken (state,token) {
-            state.token =token;
+        setToken (token) {
+            this.state.token =token;
             localStorage.setItem("token",token.token);     //存储token
         },
         delToken (state) {
@@ -19,3 +19,5 @@ export default new Vuex.Store({
         }
     }
 })
+app.use(store);
+export default store;

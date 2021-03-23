@@ -9,8 +9,16 @@
 </template>
 
 <script>
+  import {mapMutations} from "vuex"
 export default {
-  name: "Home"
+  name: "Home",
+  methods:{
+    ...mapMutations(['delToken']),
+    exit:function(){
+      this.delToken({token:''});
+      this.$router.push('/Login');
+    }
+  }
 }
 </script>
 

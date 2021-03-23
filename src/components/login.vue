@@ -3,10 +3,10 @@
   <el-card class="box-card" >
     <el-form ref="form">
       <el-form-item label="用户名">
-        <el-input v-model="loginForm.username"></el-input>
+        <el-input v-model="LoginForm.username"></el-input>
       </el-form-item>
       <el-form-item label="密码">
-        <el-input placeholder="请输入密码" v-model="loginForm.password" show-password></el-input>
+        <el-input placeholder="请输入密码" v-model="LoginForm.password" show-password></el-input>
       </el-form-item>
       <el-form-item center>
         <el-button type="primary" @click="login">登录</el-button>
@@ -32,7 +32,7 @@ import { ElMessage } from 'element-plus'
 export default {
   data() {
     return {
-      loginForm: {
+      LoginForm: {
         username: '',
         password: ''
       },
@@ -43,16 +43,18 @@ export default {
   methods: {
     ...mapMutations(['changeLogin']),
     login() {
-      let _this = this;
-      if (this.loginForm.username === '' || this.loginForm.password === '') {
-        _this.centerDialogVisible = true;
+      // let _this = this;
+      console.log(this.LoginForm);
+      if (this.LoginForm.username === '' || this.LoginForm.password === '') {
+        this.centerDialogVisible = true;
       } else {
-        axios.get('/Test',_this.loginForm).then(res => {
+        axios.post('/api/Login', {"username":this.LoginForm.username,"password":this.LoginForm.password}).then(res => {
           console.log(res.data);
-          // _this.userToken = 'Bearer ' + res.data.data.body.token;
-          // // 将用户token保存到vuex中
-          // _this.changeLogin({Authorization: _this.userToken});
-          // _this.$router.push('/home');
+          if(res.data.code===1)
+          {
+            this.setToken({token: res.data.token});    //store中的为token赋值方法
+            this.$router.push('/');
+          }
           ElMessage('登录成功！')
           this.$router.replace('/')
         }).catch(error => {

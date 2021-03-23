@@ -39,11 +39,21 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    /* 路由发生变化修改页面title */
-    if (to.meta.title) {
-        document.title = to.meta.title
+    if (to.path === '/Login') {    //若要跳转的页面是登录界面
+        next();     //直接跳转
     }
-    next()
-})
+    else if (to.path === '/'){   //若要跳转的页面是个人界面
+        let token = localStorage.getItem('token');    //获取本地存储的token值
+        if (token===null||token===''){    //若token为空则验证不成功，跳转到登录页面
+            next('/Login');
+        }
+        else{           //不为空则验证成功
+            next();
+        }
+    }
+    else{
+        next();
+    }
+});
 
-export default router
+export default router;
