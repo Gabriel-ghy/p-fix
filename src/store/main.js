@@ -13,8 +13,8 @@ const store = createStore({
             this.state.token =token;
             localStorage.setItem("token",token.token);     //存储token
         },
-        delToken (state) {
-            state.token = '';
+        delToken () {
+            this.state.token = '';
             localStorage.removeItem("token");    //删除token
         }
     }

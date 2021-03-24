@@ -7,7 +7,7 @@
       <span>请填写你的预约信息哦～</span>
     </div>
       </template>
-    <el-form label-position="left" :model="appointmentForm" :rules="rules" label-width="100px" class="demo-ruleForm" >
+    <el-form label-position="left" :model="appointmentForm" :rules="rules" label-width="100px" class="demo-ruleForm" ref="appointmentForm">
       <el-form-item label="姓名" prop="name" style="width: auto">
         <el-input v-model="appointmentForm.name"></el-input>
       </el-form-item>
@@ -42,17 +42,21 @@
       <el-input type="textarea" :rows="2" placeholder="详细的描述有利于我们做好准备哦" v-model="appointmentForm.problemDescribe"></el-input>
       </el-form-item>
       <el-form-item style="float: left">
-        <el-button type="primary">提交</el-button>
+        <el-button type="primary" @click="submitForm('appointmentForm')">提交</el-button>
       </el-form-item>
     </el-form>
   </el-card>
 </template>
 
 <script>
+
+import {ElMessage} from "element-plus";
+
 export default {
   name: "appointment",
   data() {
     return {
+      centerDialogVisible:false,
       appointmentForm: {
         name: '',
         time: '',
@@ -88,6 +92,19 @@ export default {
     }
   },
   methods:{
+    submit(){
+      console.log(this.appointmentForm);
+    },
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          alert('submit!');
+        } else {
+          ElMessage('请按要求填写信息哦～')
+          return false;
+        }
+      });
+    }
   }
 }
 </script>

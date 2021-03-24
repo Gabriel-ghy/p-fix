@@ -3,6 +3,7 @@ import Home from '../components/home.vue'
 import Index from '../components/Logged/index.vue'
 import Login from '../components/login.vue'
 import Appointment from '../components/Logged/appointment'
+import {ElMessage} from "element-plus";
 
 const routes = [
     {
@@ -46,6 +47,7 @@ router.beforeEach((to, from, next) => {
         let token = localStorage.getItem('token');    //获取本地存储的token值
         if (token===null||token===''){    //若token为空则验证不成功，跳转到登录页面
             next('/Login');
+            ElMessage("请先登录！")
         }
         else{           //不为空则验证成功
             next();
