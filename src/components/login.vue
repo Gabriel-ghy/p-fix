@@ -96,6 +96,9 @@ export default {
               }
             }).catch(error => {
               ElMessage('发生其他错误！')
+              document.getElementById("img").src = '/api/CreateImageCode?d=' + new Date() * 1; //这里的图片是更换后的图片
+              this.LoginForm.inputImageCode = ''
+              this.LoginForm.password = ''
               console.log(error);
             });
 
