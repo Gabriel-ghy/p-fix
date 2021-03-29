@@ -29,6 +29,9 @@
           <el-option label="区域二" value="beijing"></el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="&nbsp;&nbsp;电脑型号" prop="model" style="width: auto">
+        <el-input v-model="appointmentForm.model" placeholder="不清楚可不填"></el-input>
+      </el-form-item>
       <el-form-item label="电脑问题" prop="problem" >
         <el-select v-model="appointmentForm.problem" placeholder="请选择电脑出现的问题" style="width: 100%">
           <el-option label="开不了机" value="shanghai"></el-option>
@@ -63,6 +66,7 @@ export default {
         phone:'',
         QQ:'',
         school:'',
+        model:'',
         problem:'',
         problemDescribe:''
       },

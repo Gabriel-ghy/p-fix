@@ -3,12 +3,12 @@
   <el-card class="box-card">
     <el-form ref="form">
       <el-form-item label="用户名">
-        <el-input v-model="LoginForm.username"></el-input>
+        <el-input v-model="LoginForm.userid"></el-input>
       </el-form-item>
       <el-form-item label="密码">
         <el-input placeholder="请输入密码" v-model="LoginForm.password" show-password></el-input>
       </el-form-item>
-      <el-form-item label="输入验证码">
+      <el-form-item label="验证码">
         <el-input v-model="LoginForm.inputImageCode" auto-complete="off" class="el-col-width"></el-input>
       </el-form-item>
       <el-form-item>
@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       LoginForm: {
-        username: '',
+        userid: '',
         password: '',
         inputImageCode: ''
       }
@@ -41,33 +41,33 @@ export default {
 
   methods: {
     ...mapMutations(['setToken']),
-    login() {  //没有使用了，下边的handleSubmit代替
-      console.log(this.LoginForm);
-      if (this.LoginForm.username === '' || this.LoginForm.password === '') {
-        ElMessage('用户名或密码为空！');
-      } else if (store.state.token) {
-        ElMessage('您已登录！')
-        this.$router.replace('/')
-      } else {
-        axios.post('/api/Login', {
-          "username": this.LoginForm.username,
-          "password": this.LoginForm.password
-        }).then(res => {
-          console.log(res.data);
-          if (res.data.code === 1) {
-            this.setToken({token: res.data.token});    //store中的为token赋值方法
-            this.$router.push('/');
-          }
-          ElMessage('登录成功！')
-          this.$router.replace('/')
-        }).catch(error => {
-          ElMessage('账号或密码错误！')
-          console.log(error);
-        });
-      }
-    },
+    // login() {  //已经弃用，下边的handleSubmit代替
+    //   console.log(this.LoginForm);
+    //   if (this.LoginForm.username === '' || this.LoginForm.password === '') {
+    //     ElMessage('用户名或密码为空！');
+    //   } else if (store.state.token) {
+    //     ElMessage('您已登录！')
+    //     this.$router.replace('/')
+    //   } else {
+    //     axios.post('/api/Login', {
+    //       "username": this.LoginForm.username,
+    //       "password": this.LoginForm.password
+    //     }).then(res => {
+    //       console.log(res.data);
+    //       if (res.data.code === 1) {
+    //         this.setToken({token: res.data.token});    //store中的为token赋值方法
+    //         this.$router.push('/');
+    //       }
+    //       ElMessage('登录成功！')
+    //       this.$router.replace('/')
+    //     }).catch(error => {
+    //       ElMessage('账号或密码错误！')
+    //       console.log(error);
+    //     });
+    //   }
+    // },
     handleSubmit() {
-      if (this.LoginForm.username === '' || this.LoginForm.password === '' || this.LoginForm.inputImageCode === '') {
+      if (this.LoginForm.userid === '' || this.LoginForm.password === '' || this.LoginForm.inputImageCode === '') {
         ElMessage('用户名或密码或验证码为空！');
       } else if (store.state.token) {
         ElMessage('您已登录！')
@@ -78,18 +78,24 @@ export default {
           if (r.data.code === '200') {
             console.log(r.data.code)
             axios.post('/api/Login', {
-              "username": this.LoginForm.username,
+              "userid": this.LoginForm.userid,
               "password": this.LoginForm.password
             }).then(res => {
-              console.log(res.data);
+              console.log(res.data.token);
               if (res.data.code === 1) {
                 this.setToken({token: res.data.token});    //store中的为token赋值方法
+                ElMessage('登录成功！')
                 this.$router.push('/');
               }
-              ElMessage('登录成功！')
-              this.$router.replace('/')
+              else if(res.data.code === 0)
+              {
+                ElMessage("用户名或密码错误！")
+                document.getElementById("img").src = '/api/CreateImageCode?d=' + new Date() * 1; //这里的图片是更换后的图片
+                this.LoginForm.inputImageCode = ''
+                this.LoginForm.password = ''
+              }
             }).catch(error => {
-              ElMessage('账号或密码错误！')
+              ElMessage('发生其他错误！')
               console.log(error);
             });
 
@@ -99,6 +105,10 @@ export default {
             this.LoginForm.inputImageCode = ''
             this.LoginForm.password = ''
           }
+        }).catch(error2 =>{
+          ElMessage("请重试！")
+          document.getElementById("img").src = '/api/CreateImageCode?d=' + new Date() * 1; //这里的图片是更换后的图片
+          console.log(error2)
         })
       }
     }
