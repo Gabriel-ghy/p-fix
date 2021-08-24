@@ -22,10 +22,11 @@
       </el-date-picker>
       <br><br>
       <el-radio-group v-model="status">
-      <el-radio-button label="0">未维修</el-radio-button>
-      <el-radio-button label="1">未修好</el-radio-button>
-      <el-radio-button label="2">已修好</el-radio-button>
-      <el-radio-button label="3">所有</el-radio-button>
+        <el-radio-button label="0">未维修</el-radio-button>
+        <el-radio-button label="1">未修好</el-radio-button>
+        <el-radio-button label="2">已修好</el-radio-button>
+        <el-radio-button label="4">未解决</el-radio-button>
+        <el-radio-button label="3">所有</el-radio-button>
       </el-radio-group>&nbsp; &nbsp;
       <el-radio-group v-model="schoolid">
         <el-radio-button label="1">南湖校区</el-radio-button>
@@ -33,7 +34,8 @@
         <el-radio-button label="3">所有</el-radio-button>
       </el-radio-group>
       <br><br>
-      <el-table :data="tableData" style="width: 100%" :row-class-name="tableRowClassName" :default-sort = "{prop: 'fixtime', order: 'descending'}">
+      <el-table :data="tableData" style="width: 100%" :row-class-name="tableRowClassName"
+                :default-sort="{prop: 'fixtime', order: 'descending'}">
         <el-table-column prop="id" label="编号" width="80" sortable></el-table-column>
         <el-table-column prop="name" label="姓名"></el-table-column>
         <el-table-column prop="fixdate" label="维修时间" sortable></el-table-column>
@@ -42,6 +44,7 @@
             <p v-if="scope.row.status===0">未维修</p>
             <p v-if="scope.row.status===1">未修好</p>
             <p v-if="scope.row.status===2">已修好</p>
+            <p v-if="scope.row.status===4">未解决</p>
           </template>
         </el-table-column>
         <el-table-column v-if="schoolid==='3'" prop="schoolid" label="校区" width="80" sortable>
@@ -51,26 +54,94 @@
           </template>
         </el-table-column>
         <el-table-column prop="operation" label="操作">
-          <template v-slot="scope"><el-button @click="showDetail(scope.row)">查看详情</el-button></template>
+          <template v-slot="scope">
+            <el-button @click="showDetail(scope.row)">查看详情</el-button>
+          </template>
         </el-table-column>
       </el-table>
     </div>
     <el-dialog title="维修预约详情" v-model="detailVisible" width="80%">
       <el-descriptions border>
-        <el-descriptions-item><template #label>编号</template>{{detailData.id}}</el-descriptions-item>
-        <el-descriptions-item><template #label>姓名</template>{{ detailData.name }}</el-descriptions-item>
-        <el-descriptions-item><template #label>电话</template>{{ detailData.phone }}</el-descriptions-item>
-        <el-descriptions-item><template #label>QQ</template>{{ detailData.qq }}</el-descriptions-item>
-        <el-descriptions-item v-if="detailData.schoolid===1"><template #label>校区</template>南湖校区</el-descriptions-item>
-        <el-descriptions-item v-if="detailData.schoolid===2"><template #label>校区</template>浑南校区</el-descriptions-item>
-        <el-descriptions-item><template #label>预约时间</template>{{ detailData.fixdate }}</el-descriptions-item>
-        <el-descriptions-item><template #label>电脑型号</template>{{ detailData.model }}</el-descriptions-item>
-        <el-descriptions-item><template #label>问题</template>{{ detailData.problemid }}</el-descriptions-item>
-        <el-descriptions-item v-if="detailData.status===0"><template #label>维修状态</template>未维修</el-descriptions-item>
-        <el-descriptions-item v-if="detailData.status===1"><template #label>维修状态</template>未修好</el-descriptions-item>
-        <el-descriptions-item v-if="detailData.status===2"><template #label>维修状态</template>已修好</el-descriptions-item>
-        <el-descriptions-item><template #label>填写时间</template>{{ detailData.appointmenttime }}</el-descriptions-item>
-        <el-descriptions-item><template #label>问题描述</template>{{ detailData.description }}</el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>编号</template>
+          {{ detailData.id }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>姓名</template>
+          {{ detailData.name }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>电话</template>
+          {{ detailData.phone }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>QQ</template>
+          {{ detailData.qq }}
+        </el-descriptions-item>
+        <el-descriptions-item v-if="detailData.schoolid===1">
+          <template #label>校区</template>
+          南湖校区
+        </el-descriptions-item>
+        <el-descriptions-item v-if="detailData.schoolid===2">
+          <template #label>校区</template>
+          浑南校区
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>预约时间</template>
+          {{ detailData.fixdate }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>电脑型号</template>
+          {{ detailData.model }}
+        </el-descriptions-item>
+        <el-descriptions-item v-if="detailData.problemid === 1">
+          <template #label>问题</template>
+          开不了机
+        </el-descriptions-item>
+        <el-descriptions-item v-if="detailData.problemid === 2">
+          <template #label>问题</template>
+          清灰
+        </el-descriptions-item>
+        <el-descriptions-item v-if="detailData.problemid === 3">
+          <template #label>问题</template>
+          重装系统
+        </el-descriptions-item>
+        <el-descriptions-item v-if="detailData.problemid === 4">
+          <template #label>问题</template>
+          更换硅脂
+        </el-descriptions-item>
+        <el-descriptions-item v-if="detailData.problemid === 5">
+          <template #label>问题</template>
+          更换硬件
+        </el-descriptions-item>
+        <el-descriptions-item v-if="detailData.problemid === 6">
+          <template #label>问题</template>
+          其他
+        </el-descriptions-item>
+        <el-descriptions-item v-if="detailData.status===0">
+          <template #label>维修状态</template>
+          未维修
+        </el-descriptions-item>
+        <el-descriptions-item v-if="detailData.status===1">
+          <template #label>维修状态</template>
+          未修好
+        </el-descriptions-item>
+        <el-descriptions-item v-if="detailData.status===2">
+          <template #label>维修状态</template>
+          已修好
+        </el-descriptions-item>
+        <el-descriptions-item v-if="detailData.status===4">
+          <template #label>维修状态</template>
+          未解决
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>填写时间</template>
+          {{ detailData.appointmenttime }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>问题描述</template>
+          {{ detailData.description }}
+        </el-descriptions-item>
       </el-descriptions>
       <br><br>
       <el-popover placement="bottom-end" :width="400" trigger="click">
@@ -80,36 +151,39 @@
         <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入内容" v-model="note"></el-input>
         <br>
         <p>更改维修状态：
-          <el-radio v-model="radio" label='1'>未修好</el-radio>
-          <el-radio v-model="radio" label='2'>已修好</el-radio>
+          <el-radio v-if="detailData.status !== 1" v-model="radio" label='1'>未修好</el-radio>
+          <el-radio v-if="detailData.status !== 2" v-model="radio" label='2'>已修好</el-radio>
+          <el-tooltip v-if="detailData.status !== 4" class="item" effect="dark" content="如果并没有维修好但不再维修，可选择此项" placement="top-start">
+            <el-radio v-model="radio" label='4'>未解决</el-radio>
+          </el-tooltip>
         </p>
         <el-button @click="addNote()" style="float:right;">确认</el-button>
-      </el-popover>&nbsp;&nbsp;&nbsp;&nbsp;
-<!--      <br>-->
-<!--      <h3>添加维修记录</h3>-->
-<!--      <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入内容" v-model="note"></el-input>-->
-<!--      <br><br>-->
-<!--      <p>更改维修状态：-->
-<!--        <el-radio v-model="radio" label='1'>未修好</el-radio>-->
-<!--        <el-radio v-model="radio" label='2'>已修好</el-radio>-->
-<!--        <el-button @click="addNote()" style="float:right;">确认</el-button>-->
-<!--      </p>-->
-      <el-popover placement="bottom-start" :width="700" trigger="click">
-        <template #reference>
-          <el-button>已有维修记录</el-button>
-        </template>
-        <el-table :data="recordData" stripe style="width: 100%">
-          <el-table-column prop="fixuserid" label="记录者" width="180"></el-table-column>
-          <el-table-column prop="notetime" label="记录时间" width="180"></el-table-column>
-          <el-table-column prop="note" label="内容"></el-table-column>
-        </el-table>
       </el-popover>
-<!--      <h3>已有维修记录</h3>-->
-<!--      <el-table :data="recordData" stripe style="width: 100%">-->
-<!--        <el-table-column prop="fixuserid" label="记录者" width="180"></el-table-column>-->
-<!--        <el-table-column prop="notetime" label="记录时间" width="180"></el-table-column>-->
-<!--        <el-table-column prop="note" label="内容"></el-table-column>-->
-<!--      </el-table>-->
+      <!--      <br>-->
+      <!--      <h3>添加维修记录</h3>-->
+      <!--      <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入内容" v-model="note"></el-input>-->
+      <!--      <br><br>-->
+      <!--      <p>更改维修状态：-->
+      <!--        <el-radio v-model="radio" label='1'>未修好</el-radio>-->
+      <!--        <el-radio v-model="radio" label='2'>已修好</el-radio>-->
+      <!--        <el-button @click="addNote()" style="float:right;">确认</el-button>-->
+      <!--      </p>-->
+      <!--      <el-popover placement="bottom-start" :width="700" trigger="click">-->
+      <!--        <template #reference>-->
+      <!--          <el-button>已有维修记录</el-button>-->
+      <!--        </template>-->
+      <!--        <el-table :data="recordData" stripe style="width: 100%">-->
+      <!--          <el-table-column prop="fixuserid" label="记录者" width="180"></el-table-column>-->
+      <!--          <el-table-column prop="notetime" label="记录时间" width="180"></el-table-column>-->
+      <!--          <el-table-column prop="note" label="内容"></el-table-column>-->
+      <!--        </el-table>-->
+      <!--      </el-popover>-->
+      <h4>已有维修记录</h4>
+      <el-table :data="recordData" stripe style="width: 100%">
+        <el-table-column prop="fixuserid" label="记录者" width="180"></el-table-column>
+        <el-table-column prop="notetime" label="记录时间" width="180"></el-table-column>
+        <el-table-column prop="note" label="内容"></el-table-column>
+      </el-table>
     </el-dialog>
   </el-card>
 </template>
@@ -129,7 +203,7 @@ export default {
           start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
           return [start, end]
         })(),
-      },{
+      }, {
         text: '后一周',
         value: (() => {
           const end = new Date()
@@ -137,7 +211,7 @@ export default {
           end.setTime(end.getTime() + 3600 * 1000 * 24 * 7)
           return [start, end]
         })(),
-      },{
+      }, {
         text: '后两周',
         value: (() => {
           const end = new Date()
@@ -145,7 +219,7 @@ export default {
           end.setTime(end.getTime() + 3600 * 1000 * 24 * 7 * 2)
           return [start, end]
         })(),
-      },{
+      }, {
         text: '前一个月',
         value: (() => {
           const end = new Date()
@@ -163,21 +237,21 @@ export default {
         })(),
       }],
       DateRange: '',
-      status:'3',
-      schoolid:'3',
-      tableData:'',
-      detailVisible:false,
-      detailData:'',
-      problem:'',
-      recordData:[
-          {
-            fixuserid:'null',
-            notetime:'null',
-            note:'null'
-          }
+      status: '3',
+      schoolid: '3',
+      tableData: '',
+      detailVisible: false,
+      detailData: '',
+      problem: '',
+      recordData: [
+        {
+          fixuserid: 'null',
+          notetime: 'null',
+          note: 'null'
+        }
       ],
-      note:'',
-      radio:'1',
+      note: '',
+      radio: '1',
     }
   },
   watch: {
@@ -188,59 +262,54 @@ export default {
       },
       deep: true
     },
-    'status':{
-      handler:function (val,oldVal)
-      {
-        console.log(val,oldVal)
+    'status': {
+      handler: function (val, oldVal) {
+        console.log(val, oldVal)
         this.search();
         console.log(this.tableData)
       }
     },
-    'schoolid':{
-      handler:function (val,oldVal)
-      {
-        console.log(val,oldVal)
+    'schoolid': {
+      handler: function (val, oldVal) {
+        console.log(val, oldVal)
         this.search();
         console.log(this.tableData)
       }
     }
   },
-  methods:{
+  methods: {
     search() {
-      var fixdate1=''
-      var fixdate2=''
-      if (this.DateRange !== "")
-      {
+      var fixdate1 = ''
+      var fixdate2 = ''
+      if (this.DateRange !== "") {
         //TODO:点击×号后会卡死报错
-        fixdate1=this.DateRange[0].getFullYear()+"-"+(this.DateRange[0].getMonth()+1)+"-"+this.DateRange[0].getDate()
-        fixdate2=this.DateRange[1].getFullYear()+"-"+(this.DateRange[1].getMonth()+1)+"-"+this.DateRange[1].getDate()
+        fixdate1 = this.DateRange[0].getFullYear() + "-" + (this.DateRange[0].getMonth() + 1) + "-" + this.DateRange[0].getDate()
+        fixdate2 = this.DateRange[1].getFullYear() + "-" + (this.DateRange[1].getMonth() + 1) + "-" + this.DateRange[1].getDate()
+      } else {
+        fixdate1 = "0000-00-00"
+        fixdate2 = "9999-12-31"
       }
-      else
-      {
-        fixdate1="0000-00-00"
-        fixdate2="9999-12-31"
-      }
-      axios.post("/api/GetAppointments",{
-        "fixdate1":fixdate1,
-        "fixdate2":fixdate2,
-        "status":this.status,
-        "schoolid":this.schoolid
+      axios.post("/api/GetAppointments", {
+            "fixdate1": fixdate1,
+            "fixdate2": fixdate2,
+            "status": this.status,
+            "schoolid": this.schoolid
           }
       ).then(r => {
-        this.tableData=r.data
+        this.tableData = r.data
       }).catch(error => {
         console.log(error)
       })
     },
-    'tableRowClassName':function (row) {
-      if (row.row.status === 1 || row.row.status ===0) {
+    'tableRowClassName': function (row) {
+      if (row.row.status === 1 || row.row.status === 0) {
         return 'warning-row';
-      } else if (row.row.status === 2) {
+      } else if (row.row.status === 2 || row.row.status === 4) {
         return 'success-row';
       }
       return '';
     },
-    showDetail(row){
+    showDetail(row) {
       console.log(row);
       this.detailVisible = true;
       this.detailData = row;
@@ -251,22 +320,24 @@ export default {
         console.log(error)
       })
     },
-    addNote(){
-      console.log(localStorage.getItem('userid'))
-      axios.post("/api/AddNotes",{
-        'appointmentid':this.detailData.id,
+    addNote() {
+      // console.log(localStorage.getItem('userid'))
+      axios.post("/api/AddNotes", {
+        'appointmentid': this.detailData.id,
         'fixuserid': localStorage.getItem('userid'),
-        'note':this.note
+        'note': this.note,
+        'status': this.radio
       }).then(r => {
+        this.detailData.status = parseInt(this.radio)
         console.log(r.data)
-      }).catch(error => {
-        console.log(error)
-      })
-      this.note = '';
-      this.$message({type: 'success', message: '添加成功!'});
-      axios.get("/api/GetNotesByAppId?appointmentid=" + this.detailData.id).then(r => {
-        console.log(r.data);
-        this.recordData = r.data;
+        this.note = '';
+        this.$message({type: 'success', message: '添加成功!'});
+        axios.get("/api/GetNotesByAppId?appointmentid=" + this.detailData.id).then(r => {
+          console.log(r.data);
+          this.recordData = r.data;
+        }).catch(error => {
+          console.log(error)
+        })
       }).catch(error => {
         console.log(error)
       })
@@ -290,11 +361,12 @@ export default {
   justify-content: space-between;
   align-items: center;
 }
-.el-table>>>.warning-row {
-   background: oldlace;
- }
 
-.el-table>>>.success-row {
+.el-table >>> .warning-row {
+  background: oldlace;
+}
+
+.el-table >>> .success-row {
   background: #f0f9eb;
 }
 </style>

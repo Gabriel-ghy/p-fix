@@ -90,7 +90,8 @@ export default {
       rules: {
         name: [
           {required: true, message: '请输入您的姓名', trigger: 'blur'},
-          {min: 2, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur'}
+          {min: 2, max: 4, message: '长度在 2 到 4 个字符', trigger: 'blur'},
+          {type:'string',message: '请输入字符',trigger: 'change'}
         ],
         fixdate: [
           {required: true, message: '请选择时间', trigger: 'change'}
@@ -103,11 +104,20 @@ export default {
         ],
         phone: [
           {required: true, message: '请输入您的电话', trigger: 'blur'},
-          {min: 11, max: 11, message: '长度为 11 个字符', trigger: 'blur'}
+          {min: 11, max: 11, message: '长度为 11 个字符', trigger: 'blur'},
+          {
+            validator: (rule, value, cb) => {
+              if (/^1[3-9]\d{9}$/.test(value)) {
+                cb()
+              } else {
+                cb(new Error('手机号格式错误'))
+              }
+            }
+          }
         ],
         QQ: [
           {required: true, message: '请输入您的QQ', trigger: 'blur'},
-          {min: 6, max: 10, message: '长度在 8 到 10 个字符', trigger: 'blur'}
+          {min: 6, max: 10, message: '长度在 8 到 10 个字符', trigger: 'blur'},
         ],
         inputImageCode: [
           {required: true, message: '请输入验证码', trigger: 'blur'},
