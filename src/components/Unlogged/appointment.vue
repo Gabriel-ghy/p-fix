@@ -3,11 +3,12 @@
   <br>
   <el-card class="box-card">
     <template #header>
-    <div class="card-header">
-      <span>请填写你的预约信息哦～</span>
-    </div>
-      </template>
-    <el-form label-position="left" :model="appointmentForm" :rules="rules" label-width="100px" class="demo-ruleForm" ref="appointmentForm">
+      <div class="card-header">
+        <span>请填写你的预约信息哦～</span>
+      </div>
+    </template>
+    <el-form label-position="left" :model="appointmentForm" :rules="rules" label-width="100px" class="demo-ruleForm"
+             ref="appointmentForm">
       <el-form-item label="姓名" prop="name" style="width: auto">
         <el-input v-model="appointmentForm.name"></el-input>
       </el-form-item>
@@ -17,7 +18,7 @@
       <el-form-item label="QQ" prop="QQ" style="width: auto">
         <el-input v-model="appointmentForm.QQ"></el-input>
       </el-form-item>
-      <el-form-item label="校区" prop="schoolid" >
+      <el-form-item label="校区" prop="schoolid">
         <el-select v-model="appointmentForm.schoolid" placeholder="请选择校区" style="width: 100%">
           <el-option label="南湖校区" value="1"></el-option>
           <el-option label="浑南校区" value="2"></el-option>
@@ -25,14 +26,15 @@
         </el-select>
       </el-form-item>
       <el-form-item label="日期" prop="fixdate" v-if="appointmentForm.schoolid!==''">
-        <el-date-picker v-model="appointmentForm.fixdate" type="date" placeholder="选择日期" style="width: 100%" :disabled-date="disabledDate">
+        <el-date-picker v-model="appointmentForm.fixdate" type="date" placeholder="选择日期" style="width: 100%"
+                        :disabled-date="disabledDate">
         </el-date-picker>
       </el-form-item>
-      <p id="information"> </p>
+      <p id="information"></p>
       <el-form-item label="&nbsp;&nbsp;电脑型号" prop="model" style="width: auto">
         <el-input v-model="appointmentForm.model" placeholder="不清楚可不填"></el-input>
       </el-form-item>
-      <el-form-item label="电脑问题" prop="problemid" >
+      <el-form-item label="电脑问题" prop="problemid">
         <el-select v-model="appointmentForm.problemid" placeholder="请选择电脑出现的问题" style="width: 100%">
           <el-option label="开不了机" value="1"></el-option>
           <el-option label="清灰" value="2"></el-option>
@@ -43,8 +45,15 @@
         </el-select>
         <!--TODO: 这一块应该从后端查询，直接在前端显示不利于后期修改-->
       </el-form-item>
-      <el-form-item label="&nbsp;&nbsp;问题描述" prop="description" >
-      <el-input type="textarea" :rows="2" placeholder="详细的描述有利于我们做好准备哦" v-model="appointmentForm.description"></el-input>
+      <el-form-item label="&nbsp;&nbsp;问题描述" prop="description">
+        <el-input type="textarea" :rows="2" placeholder="详细的描述有利于我们做好准备哦"
+                  v-model="appointmentForm.description"></el-input>
+      </el-form-item>
+      <el-form-item label="&nbsp;&nbsp;验证码" prop="inputImageCode">
+        <el-input v-model="appointmentForm.inputImageCode" auto-complete="off" class="el-col-width"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <img id="img" alt="验证码" onclick="this.src='/api/CreateImageCode?d='+new Date()*1" src="/api/CreateImageCode"/>
       </el-form-item>
       <el-form-item style="float: left">
         <el-button type="primary" @click="submitForm('appointmentForm')">提交</el-button>
@@ -64,19 +73,20 @@ export default {
   data() {
     let this_ = this
     return {
-      centerDialogVisible:false,
+      centerDialogVisible: false,
       appointmentForm: {
         name: '闫泽宇',
         // fixtimeid: '',
-        fixdate:'',
-        phone:'13028616232',
-        QQ:'1023464930',
-        schoolid:'',
-        model:'',
-        problemid:'',
-        description:''
+        fixdate: '',
+        phone: '13028616232',
+        QQ: '1023464930',
+        schoolid: '',
+        model: '',
+        problemid: '',
+        description: '',
+        inputImageCode: ''
       },
-      fixtimedata:'',
+      fixtimedata: '',
       rules: {
         name: [
           {required: true, message: '请输入您的姓名', trigger: 'blur'},
@@ -98,48 +108,60 @@ export default {
         QQ: [
           {required: true, message: '请输入您的QQ', trigger: 'blur'},
           {min: 6, max: 10, message: '长度在 8 到 10 个字符', trigger: 'blur'}
+        ],
+        inputImageCode: [
+          {required: true, message: '请输入验证码', trigger: 'blur'},
+          {min: 4, max: 4, message: '长度为 4 个字符', trigger: 'blur'}
         ]
       },
       disabledDate(time) {
-        if(time.getTime()>Date.now())
-        {
-          if(this_.appointmentForm.schoolid==="1")
-          { //南湖校区
+        if (time.getTime() > Date.now()) {
+          if (this_.appointmentForm.schoolid === "1") { //南湖校区
             return !(time.getDay() === 1 || time.getDay() === 2 || time.getDay() === 4);
-          }
-          else if(this_.appointmentForm.schoolid==="2")
-          {
+          } else if (this_.appointmentForm.schoolid === "2") {
             return !(time.getDay() === 0 || time.getDay() === 3);
           }
           // TODO: 这块依赖于前端的计算了，不便于修改维修日期，需要优化
-        }
-        else return true
+        } else return true
       }
     }
   },
-  methods:{
-    submit(){
+  methods: {
+    submit() {
       console.log(this.appointmentForm);
     },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          axios.post("/api/Appointment",{
-            'name': this.appointmentForm.name,
-            'phone':this.appointmentForm.phone,
-            'qq':this.appointmentForm.QQ,
-            'schoolid':this.appointmentForm.schoolid,
-            'model':this.appointmentForm.model,
-            'problemid':this.appointmentForm.problemid,
-            'fixdate':this.appointmentForm.fixdate.getFullYear()+"-"+(this.appointmentForm.fixdate.getMonth()+1)+"-"+this.appointmentForm.fixdate.getDate(),
-            'description':this.appointmentForm.description
-          }).then(r => {
-            console.log(r.data)
-          }).catch(error => {
-            console.log(error)
+          axios.get('/api/CheckImageCode?inputImageCode=' + this.appointmentForm.inputImageCode).then(r => {
+            //先校验输入的验证码
+            if (r.data.code === '200') {
+              axios.post("/api/Appointment", {
+                'name': this.appointmentForm.name,
+                'phone': this.appointmentForm.phone,
+                'qq': this.appointmentForm.QQ,
+                'schoolid': this.appointmentForm.schoolid,
+                'model': this.appointmentForm.model,
+                'problemid': this.appointmentForm.problemid,
+                'fixdate': this.appointmentForm.fixdate.getFullYear() + "-" + (this.appointmentForm.fixdate.getMonth() + 1) + "-" + this.appointmentForm.fixdate.getDate(),
+                'description': this.appointmentForm.description
+              }).then(r => {
+                console.log(r.data)
+                ElMessage('提交成功！')
+                this.resetForm('appointmentForm')
+              }).catch(error => {
+                console.log(error)
+              })
+            } else {
+              document.getElementById("img").src = '/api/CreateImageCode?d=' + new Date() * 1; //这里的图片是更换后的图片
+              ElMessage("验证码错误！")
+              this.appointmentForm.inputImageCode = ''
+            }
+          }).catch(error2 => {
+            ElMessage("请重试！")
+            document.getElementById("img").src = '/api/CreateImageCode?d=' + new Date() * 1; //这里的图片是更换后的图片
+            console.log(error2)
           })
-          ElMessage('提交成功！')
-          this.resetForm('appointmentForm')
         } else {
           ElMessage('请按要求填写信息哦～')
           return false;
@@ -148,33 +170,31 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
-      document.getElementById("information").innerHTML =''
+      document.getElementById("information").innerHTML = ''
     }
   },
-  watch:{
-    'appointmentForm.schoolid':{
-      handler: function(newval,oldVal) {
-        console.log(newval,oldVal)
-        if(newval!=='')
-        {
-            this.appointmentForm.fixdate = ''
+  watch: {
+    'appointmentForm.schoolid': {
+      handler: function (newval, oldVal) {
+        console.log(newval, oldVal)
+        if (newval !== '') {
+          this.appointmentForm.fixdate = ''
         }
       },
       deep: true
     },
-    'appointmentForm.fixdate':{
-      handler: function(newval,oldVal) {
-        console.log(newval,oldVal)
-        if(newval!=='')
-          document.getElementById("information").innerHTML = "您选择的时间和地点是："+this.appointmentForm.fixdate.getFullYear()+"年"+(this.appointmentForm.fixdate.getMonth()+1)+"月"+this.appointmentForm.fixdate.getDate()+"日 "+this.fixtimedata.filter(function (_data){
-            return _data.weekdayid===newval.getDay()
+    'appointmentForm.fixdate': {
+      handler: function (newval, oldVal) {
+        console.log(newval, oldVal)
+        if (newval !== '')
+          document.getElementById("information").innerHTML = "您选择的时间和地点是：" + this.appointmentForm.fixdate.getFullYear() + "年" + (this.appointmentForm.fixdate.getMonth() + 1) + "月" + this.appointmentForm.fixdate.getDate() + "日 " + this.fixtimedata.filter(function (_data) {
+            return _data.weekdayid === newval.getDay()
           })[0]["fixtimestring"]
       }
     }
   },
   mounted() {
-    console.log("yeyeye")
-    axios.get("/api/GetFixTimes").then((r) => { //获取维修时间信息
+      axios.get("/api/GetFixTimes").then((r) => { //获取维修时间信息
       this.fixtimedata = r.data
     }).catch(error => {
       console.log(error)
@@ -188,6 +208,7 @@ export default {
   width: 90%;
   margin: 0 auto;
 }
+
 .card-header {
   display: flex;
   justify-content: space-between;

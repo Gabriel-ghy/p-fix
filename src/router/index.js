@@ -1,9 +1,11 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import Home from '../components/home.vue'
+import Home from '../components/Logged/home.vue'
 import Index from '../components/Logged/index.vue'
+import Index2 from '../components/Unlogged/index'
 import Login from '../components/login.vue'
-import Appointment from '../components/Logged/appointment'
+import Appointment from '../components/Unlogged/appointment'
 import FixManagement from '../components/Logged/fixmanagement'
+import Home2 from  '../components/Unlogged/home'
 import {ElMessage} from "element-plus";
 
 const routes = [
@@ -20,12 +22,6 @@ const routes = [
                     meta: {requireAuth: true,title:"主页-先锋网络中心"}
                 },
                 {
-                    path: '/Appointment',
-                    name: 'Appointment',
-                    component: Appointment,
-                    meta: {requireAuth: true,title: "预约维修-先锋网络中心"}
-                },
-                {
                     path: '/FixManagement',
                     name: 'FixManagement',
                     component: FixManagement,
@@ -38,7 +34,27 @@ const routes = [
         name: 'Login',
         component: Login,
         meta: {requireAuth: true}
-    }
+    },
+    {
+        path: '/Home',
+        name: 'Home2',
+        component: Home2,
+        children:
+            [
+                {
+                    path: '/Home',
+                    name: 'Index2',
+                    component: Index2,
+                    meta: {requireAuth: true,title:"主页-先锋网络中心"}
+                },
+                {
+                    path: '/Appointment',
+                    name: 'Appointment',
+                    component: Appointment,
+                    meta: {requireAuth: true,title:"主页-先锋网络中心"}
+                }
+            ]
+    },
 ]
 
 const router = createRouter({
@@ -47,7 +63,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    if (to.path === '/Login') {    //若要跳转的页面是登录界面
+    if (to.path === '/Login' || to.path === '/Appointment' || to.path === '/Home') {    //若要跳转的页面是登录界面
         next();     //直接跳转
     }
     else{   //若要跳转的页面是个人界面  if (to.path === '/')

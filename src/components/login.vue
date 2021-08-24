@@ -20,8 +20,8 @@
         <img id="img" alt="验证码" onclick="this.src='/api/CreateImageCode?d='+new Date()*1" src="/api/CreateImageCode"/>
       </el-form-item>
       <el-form-item center>
-        <el-button type="primary" @click="handleSubmit">登录</el-button>
-        <el-button>注册</el-button>
+        <el-button type="primary" @click="handleSubmit">登录</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <el-button @click="goback">游客界面</el-button>
       </el-form-item>
     </el-form>
   </el-card>
@@ -92,8 +92,10 @@ export default {
           console.log(error2)
         })
       }
+    },
+    goback(){
+      this.$router.push('/Home');
     }
-
   }
 };
 </script>
